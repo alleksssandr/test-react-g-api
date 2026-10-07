@@ -1,0 +1,51 @@
+.field {
+    gap: 8px;
+    display: flex;
+    background: #F0F2F5;
+    border-radius: 22px;
+    padding: 6px 6px 6px 12px;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.field:hover {
+    background: #E7E9ED;
+}
+
+.field--focused {
+    background: #FFFFFF;
+    box-shadow: 0 0 0 2px #2688EB;
+}
+
+.field--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.field__input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    resize: none;
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 20px;
+    color: #1C1D1E;
+}
+
+.field__input::placeholder {
+    color: #818C99;
+}
+
+.field__input:disabled {
+    cursor: not-allowed;
+}
+
+.field__input::-webkit-scrollbar {
+    width: 4px;
+}
+
+.field__input::-webkit-scrollbar-thumb {
+    background: #C4C8CC;
+    border-radius: 2px;
+}

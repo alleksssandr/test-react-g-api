@@ -1,0 +1,22 @@
+.authorization {
+    width: 100%;
+    max-width: 500px;
+    gap: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+.authorization__fields {
+    gap: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.authorization__error {
+    color: brown;
+}
+
+.authorization__logo {
+    display: flex;
+    justify-content: center;
+}
