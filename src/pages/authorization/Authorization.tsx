@@ -10,11 +10,9 @@ import type { AxiosError } from 'axios';
 import waImg from '../../assets/wa.svg'
 
 function PageAuthorization() {
-
-
   const [urlAPI, setUrlAPI] = useState('https://7201.api.green-api.com');
-  const [idInstance, setIdInstance] = useState('720122757071');
-  const [apiTokenInstance, setApiTokenInstance] = useState('1c8e588db57c462d9bb70c159990c4eca9296e60d29148909f');
+  const [idInstance, setIdInstance] = useState('');
+  const [apiTokenInstance, setApiTokenInstance] = useState('');
 
   const [error, setError] = useState('');
 

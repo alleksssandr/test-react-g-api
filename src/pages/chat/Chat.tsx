@@ -11,8 +11,8 @@ import { useNavigate } from 'react-router-dom';
 import type { AxiosError } from 'axios';
 
 export interface IGreenApiNotification {
-  receiptId?: number;
-  body?: {
+  receiptId: number;
+  body: {
     typeWebhook: string;
     instanceData: {
       idInstance: number;
@@ -40,11 +40,10 @@ export interface IGreenApiNotification {
   };
 }
 
-interface IMessage extends IGreenApiNotification {
-  error?: string
-
+interface IMessage {
   text?: string
   date?: number
+  type: string
 }
 
 function PageAuthorization() {
@@ -59,7 +58,7 @@ function PageAuthorization() {
 
   const [isSelectedNumber, setSelectedNumber] = useState(false);
 
-  const [phoneNumber, setPhoneNumber] = useState('79138103042');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<IMessage[]>([]);
 
@@ -73,19 +72,23 @@ function PageAuthorization() {
 
     try {
       const notification = await (await apiClient.get<IGreenApiNotification>(`${url}/waInstance${idInstance}/receiveNotification/${apiTokenInstance}`)).data || null
+      await (await apiClient.delete<void>(`${url}/waInstance${idInstance}/deleteNotification/${apiTokenInstance}/${notification.receiptId}`))
 
       console.log('!!!notification: ', notification);
-      
 
-      if (isMountedRef.current && notification) {
-        setMessages((prev) => [notification, ...prev]);
+
+
+      if (isMountedRef.current && notification && notification.body.typeWebhook === 'incomingMessageReceived') {
+        const text = notification.body?.messageData.textMessageData?.textMessage || ''
+        const date = (notification.body?.timestamp || 0) * 1000
+        setMessages((prev) => [...prev, { text, date, type: 'in' }]);
       }
 
       if (isMountedRef.current && isSelectedNumber) {
         // eslint-disable-next-line react-hooks/immutability
         timeoutRef.current = setTimeout(poll, 2500);
       }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       if (isMountedRef.current) {
         timeoutRef.current = setTimeout(poll, 5000);
@@ -110,7 +113,6 @@ function PageAuthorization() {
 
 
   const handleLogout = () => {
-    // 
     restore()
     navigate('/chat')
   }
@@ -126,16 +128,11 @@ function PageAuthorization() {
         "message": message,
       })
 
-      setMessages([...messages, { text: message, date: new Date().getTime() }])
+      setMessages([...messages, { text: message, date: new Date().getTime(), type: 'out' }])
       setMessage('')
     } catch (error) {
-      setMessages([...messages, { error: (error as AxiosError).message, date: new Date().getTime()}])
+      setMessages([...messages, { text: (error as AxiosError).message, date: new Date().getTime(), type: 'error' }])
     }
-  }
-
-
-  const getMsgClass = (m: IMessage): string => {
-    return 'chat__message ' + (m.error?.length ? 'error' : m.text?.length ? 'out' : 'in')
   }
 
   return (
@@ -191,19 +188,17 @@ function PageAuthorization() {
               </p>
 
               <div className='chat__messages'>
-                {messages.map((m: IMessage) => (
-                  <>
-                    <div className={getMsgClass(m)}>
+                {messages.map((m: IMessage, index: number) => (
+                    <div className={'chat__message ' + m.type} key={'message-' + index}>
                       <div className='chat__message-content'>
                         <p>
-                        {m.error || m.text}
+                          {m.text}
                         </p>
                         <div>
                           {m.date ? new Date(m.date).toLocaleTimeString() : ''}
                         </div>
                       </div>
                     </div>
-                  </>
                 ))}
 
               </div>

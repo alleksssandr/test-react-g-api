@@ -57,6 +57,9 @@
             border-color: red;
         }
     }
+    &.in {
+        justify-content: flex-start;
+    }
 }
 
 .chat__message-content {
